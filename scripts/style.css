@@ -106,7 +106,7 @@ body {
 	border-radius: 10px;
 	max-height: 0px;
 	opacity: 0;
-	transform: translateX(-300px) scale(0.2);
+	transform: scale(0.2);
 	transition: margin-bottom 200ms, max-height 500ms, opacity 150ms, transform 250ms;
 	transition-timing-function: ease-out;
 }
