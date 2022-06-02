@@ -1,4 +1,4 @@
-{ chat : [
+[
     {
         "action_type": "add_chat_item",
         "author": {
@@ -68131,4 +68131,4 @@
         "time_text": "2:29:58",
         "timestamp": 1614947521455329
     }
-]}
+]
