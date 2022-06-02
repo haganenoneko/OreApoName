@@ -10,6 +10,11 @@ let demotext = "おれあぽすげぇおれあぽすげぇおれあぽすげぇ�
 let demoname = 'れあぽおれあぽおれあぽ'
 let demoimgurl = "https://yt4.ggpht.com/ytc/AKedOLTN9TOxEF4KIA3jpTo0OtAKG2_Bv3ikYvAQ9-Bpjg=s64-c-k-c0x00ffffff-no-rj"
 
+let chatJSON = ".chat.json";
+fetch(chatJSON)
+	.then(response => response.json())
+	.then(json => console.log(json))
+
 function createElement(opts = {}) {
 	let ele = document.createElement('div');
 	
@@ -86,11 +91,6 @@ class Chat {
 class Line {
 	constructor() {
 		this.pickColor();
-		this.pickName();
-		this.pickText();
-		this.pickHasImg();
-
-		this.pickHasRichBody();
 		this.setupElements();
 		this.animateIn();
 	}
@@ -102,33 +102,7 @@ class Line {
 		this.profileImgColor = `hsl(${this.hue}, 40%, 55%)`;
 		return this.hue;
 	}
-	
-	pickName() {
-		// Length of the 'name' 
-		this.name = 0.5;		
-	}
-	
-	pickText() {
-		let lengthChoice = Math.random();
-		let lengthWeight = 1;
-		if(lengthChoice < 0.5) {
-			lengthWeight = 0.6;
-		}
-		else if(lengthChoice < 0.9) {
-			lengthWeight = 0.8;
-		}
-		this.length = Math.max(0.02, lengthChoice * lengthWeight);
-		this.textCount = 1;
-	}
-	
-	pickHasImg() {
-		this.hasImg = false;
-	}
-	
-	pickHasRichBody() {
-		this.hasRichBody = !this.hasImage && Math.random() > 0.85;
-	}
-	
+			
 	setupElements() {
 		let ele = this.createElement();
 		this.ele = ele;
