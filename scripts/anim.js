@@ -4,11 +4,6 @@ let container = document.getElementById('chat-container');
 let lineWidth = 500;
 let profileImgWidth = 60;
 let textWidth = lineWidth - 20 - profileImgWidth - 10;
-let chats = [];
-
-let demotext = "おれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇおれあぽすげぇ";
-let demoname = 'れあぽおれあぽおれあぽ'
-let demoimgurl = "https://yt4.ggpht.com/ytc/AKedOLTN9TOxEF4KIA3jpTo0OtAKG2_Bv3ikYvAQ9-Bpjg=s64-c-k-c0x00ffffff-no-rj"
 
 chatData = [
     {
@@ -68177,10 +68172,17 @@ function createImageElement(opts = {}) {
 	return img;
 }
 
+
 function addChat() {
 	let chat = new Chat();
-	chats.push(chat);
-	setTimeout(() => chat.loop(), 200);
+	let msgData = Object();
+	let t0 = 0.0;
+	
+	for (let i=0; i < chatData.length; i++) {
+		t0 = (i > 0) ? +chatData[i-1].time_in_seconds : 6721.323;
+		msgData = parseChatElement(i, t0);
+		setTimeout(() => chat.loop(msgData), msgData.dt)
+	}
 	return chat;
 }
 
@@ -68193,12 +68195,6 @@ class Chat {
 		this.anim = null;
 		container.appendChild(this.ele);
 	}
-	addLine() {
-		let l = new Line();
-		this.lines.push(l);
-		this.ele.appendChild(l.ele.lineContainer);
-		return l;
-	}
 	removeOldest() {
 		let maxCount = Math.ceil(window.innerHeight / 1080 * 12);
 		if (this.lines.length > maxCount) {
@@ -68206,13 +68202,18 @@ class Chat {
 			oldest.forEach(n => this.ele.removeChild(n.ele.lineContainer));
 		}
 	}
-	loop() {
+	loop(msgData) {
 		if (this.anim) {
 			this.stopLoop();
 		}
-		this.addLine();
+		let l = new Line(
+			msgData.img_url, 
+			msgData.name, 
+			msgData.text);
+		this.lines.push(l);
+		this.ele.appendChild(l.ele.lineContainer);
 		this.removeOldest();
-		this.anim = setTimeout(() => this.loop(), 1200);
+		this.anim = setTimeout(() => this.loop(msgData), 1200);		
 	}
 	stopLoop() {
 		clearTimeout(this.anim);
@@ -68221,7 +68222,11 @@ class Chat {
 }
 
 class Line {
-	constructor() {
+	constructor(img_url, name, msg_text) {
+		this.img_url = img_url;
+		this.name = name;
+		this.msg_text = msg_text;
+
 		this.pickColor();
 		this.setupElements();
 		this.animateIn();
@@ -68276,7 +68281,11 @@ class Line {
 			}, delay += 50);
 		});
 
-		ele.texts.forEach((n, i, arr) => setTimeout(() => n.style.opacity = 1, 70 * (i + 3) + delay));
+		ele.texts.forEach((n, i, arr) => {
+			setTimeout(() => {
+				n.style.opacity = 1, 70*(i+3) + delay	
+			})
+		});
 	}
 
 	createElement() {
@@ -68293,7 +68302,7 @@ class Line {
 		profileImg.appendChild(
 			createImageElement({
 				class: 'profile-photo',
-				src: demoimgurl
+				src: this.img_url
 			})
 		);
 
@@ -68302,17 +68311,15 @@ class Line {
 		});
 		let name = createElement({
 			class: 'name',
-			innerhtml: demoname
+			innerhtml: this.name
 		});
 		let texts = [];
-		// let img = createElement({ class: 'img' });
-		// let richBody = createElement({ class: 'rich-body' });
 
 		body.appendChild(name);
 		for (let i = 0; i < (this.textCount || 1); i++) {
 			let text = createElement({
 				class: 'text',
-				innerhtml: demotext
+				innerhtml: this.msg_text
 			});
 			texts.push(text);
 			body.appendChild(text);
@@ -68342,7 +68349,7 @@ function stopLoop() {
 
 (() => addChat())();
 
-function parseChatElement(ind, t0=6721.323) {
+function parseChatElement(ind, t0) {
 	let item = chatData[ind];
 	let txt = item.message;
 
@@ -68361,9 +68368,8 @@ function parseChatElement(ind, t0=6721.323) {
 	const msg = {
 		text: txt,
 		name: item.author.name,
-		time: +item.time_in_seconds - t0,
+		dt: +item.time_in_seconds - t0,
 		img_url: item.author.images[2].url
 	};
-	
 	return(msg)
 }
